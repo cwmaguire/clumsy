@@ -6,4 +6,4 @@
 (run-tests)
 
 (deftest all-rooms-connected
-  (is (subset? (keys rooms) (set (flatten (keys room-conns))))))
+  (is (subset? (keys @rooms) (set (flatten (map vals (vals room-conns)))))))
