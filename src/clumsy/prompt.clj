@@ -19,8 +19,7 @@
 
 (defn prompt
   "Calls build-prompt with either the supplied prompt arguments, the player's prompt arguments or some default prompt arguments"
-  [player & xs] (build-prompt player "" (or (first xs) (:prompt player) default-prompt))
-  )
+  [player & xs] (build-prompt player "" (cond (not (empty? xs)) xs (:prompt player) (:prompt player) :else default-prompt)))
 
 ;(defn prompt
 ;  ([player & [x & xs]] (prompt player (or (:prompt player) default-prompt)))

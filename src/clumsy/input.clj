@@ -3,7 +3,7 @@
   (:use clumsy.rooms )
   (:use [clojure.string :only (split lower-case join)]))
 
-(def player-cmd-fns [clumsy.rooms/room-cmds])
+(def player-cmd-fns [clumsy.rooms/get-room-cmds clumsy.rooms/get-item-cmds])
 
 (defn match-commands
   "runs each fully qualified function listed in fns with the player-id and cmd;
