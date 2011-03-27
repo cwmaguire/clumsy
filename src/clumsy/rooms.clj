@@ -15,7 +15,7 @@
 (def room-conns {
                  1 {"west" 2 "street" 2 "east" 4 "hall" 4}
                  2 {"east" 1 "inn" 1 "north" 3}
-                 3 {["south"] 2}
+                 3 {"south" 2}
                  4 {"west" 1 "common" 1 "north" 6 "101" 6 "up" 5 "stairs" 5 "south" 7 "102" 7}
                  5 {"down" 4 "stairs" 4 "north" 8 "201" 8}
                  6 {"south" 4 "hall" 4}
