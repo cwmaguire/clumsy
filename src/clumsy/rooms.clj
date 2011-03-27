@@ -27,11 +27,12 @@
 (defn move-player
   "dummy command to test moving players"
   [player-id room-id]
-  (let [old-room-id (get-in @players [player-id :room-id])]
-    (dosync
-     (alter players assoc-in [player-id :room-id] room-id)
-     (alter rooms assoc-in [room-id :players] (conj (get-in @rooms [room-id :players]) player-id))
-     (alter rooms assoc-in [old-room-id :players] (remove #(= % player-id) (get-in @rooms [old-room-id :players]))))))
+  (future
+    (let [old-room-id (get-in @players [player-id :room-id])]
+      (dosync
+       (alter players assoc-in [player-id :room-id] room-id)
+       (alter rooms assoc-in [room-id :players] (conj (get-in @rooms [room-id :players]) player-id))
+       (alter rooms assoc-in [old-room-id :players] (remove #(= % player-id) (get-in @rooms [old-room-id :players])))))))
 
 (defn room-cmds
   "find the players room and return a map of each matching \"exit\" name
