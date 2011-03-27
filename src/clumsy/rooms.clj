@@ -1,5 +1,5 @@
 (ns clumsy.rooms
-  (:use clumsy.players))
+  (:use [clojure.string :only (join)] clumsy.players))
 
 (def rooms (ref {
                  1 {:id 1 :name "Common Room" :desc "The common room of the Frogleg Inn"}
@@ -13,20 +13,32 @@
                  }))
 
 (def room-conns {
-                 1 {["west" "street"] 2 ["east" "hall"] 4}
-                 2 {["east" "inn"] 1 ["north"] 3}
+                 1 {"west" 2 "street" 2 "east" 4 "hall" 4}
+                 2 {"east" 1 "inn" 1 "north" 3}
                  3 {["south"] 2}
-                 4 {["west" "common"] 1 ["north" "101"] 6 ["up" "stairs"] 5 ["south" "102"] 7}
-                 5 {["down" "stairs"] 4 ["north" "201"] 8}
-                 6 {["south" "hall"] 4}
-                 7 {["north" "hall"] 4}
-                 8 {["south" "hall"] 5}
+                 4 {"west" 1 "common" 1 "north" 6 "101" 6 "up" 5 "stairs" 5 "south" 7 "102" 7}
+                 5 {"down" 4 "stairs" 4 "north" 8 "201" 8}
+                 6 {"south" 4 "hall" 4}
+                 7 {"north" 4 "hall" 4}
+                 8 {"south" 5 "hall" 5}
   })
 
-;get room connection commands: everyone should be able to run those
-(defn room-commands
-  ([]
-     (set (flatten (map vals (vals room-conns)))))
-  ([player-id]
-     (let [func (fn [mp] (get mp (:room (get @players player-id))))]
-       (flatten (map func (filter func (vals room-conns)))))))
+;(defn player-room-cmds [player-id cmd]
+;  (re-seq (re-pattern (str "\\b" cmd ".*?\\b")) (join " " (flatten (keys (get room-conns (:room (get @players player-id))))))))
+
+(defn move-player [player-id room-id] (println "moving player " player-id " to room " room-id))
+
+; if cmd matches a string in any key of the room connections for the
+; players room, then return a command that will move the player to the
+; connected room
+(defn room-cmds [player-id cmd]
+  (let [room-id (:room-id @(get @players player-id))
+        ptrn (re-pattern (str "\\b" cmd ".*?\\b"))
+        match-conns-fn (fn [kv] (re-find ptrn (get kv 0)))
+        room-conn-map (get room-conns room-id)
+        entries (filter match-conns-fn room-conn-map)]
+    (apply merge {}
+           (flatten
+            (map (fn [kv]
+                   { (first kv)
+                     (partial move-player player-id (second kv))}) entries)))))
