@@ -23,22 +23,22 @@
                  8 {"south" 5 "hall" 5}
   })
 
-;(defn player-room-cmds [player-id cmd]
-;  (re-seq (re-pattern (str "\\b" cmd ".*?\\b")) (join " " (flatten (keys (get room-conns (:room (get @players player-id))))))))
+(defn move-player
+  "dummy command to test moving players"
+  [player-id room-id]
+  (println "moving player " player-id " to room " room-id))
 
-(defn move-player [player-id room-id] (println "moving player " player-id " to room " room-id))
-
-; if cmd matches a string in any key of the room connections for the
-; players room, then return a command that will move the player to the
-; connected room
-(defn room-cmds [player-id cmd]
+(defn room-cmds
+  "find the players room and return a map of each matching \"exit\" name
+  and a command that will move the player to room at that exit."
+  [player-id cmd]
   (let [room-id (:room-id @(get @players player-id))
         ptrn (re-pattern (str "\\b" cmd ".*?\\b"))
         match-conns-fn (fn [kv] (re-find ptrn (get kv 0)))
         room-conn-map (get room-conns room-id)
         entries (filter match-conns-fn room-conn-map)]
-    (apply merge {}
-           (flatten
-            (map (fn [kv]
-                   { (first kv)
-                     (partial move-player player-id (second kv))}) entries)))))
+    (apply merge {} (flatten
+                     (map (fn [kv]
+                            {(first kv)
+                             (partial move-player player-id (second kv))})
+                          entries)))))
