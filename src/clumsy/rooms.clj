@@ -64,10 +64,15 @@
 
 ; find all the items in the room that match the first argument
 (defn get-item-id [player-id & args]
-  (let [ptrn (re-pattern (str "^" (first args)))
-        room-items (->> player-id (get @players) :room-id (get @rooms) :items (select-keys @items) vals)
-        items (filter (fn [m] (re-find ptrn (:name m))) room-items)]
-    items))
+  (let [ptrn (re-pattern (str "^" (first args)))]
+    ( ->> player-id
+          (get @players)
+          :room-id
+          (get @rooms)
+          :items
+          (select-keys @items)
+          vals
+          (filter (fn [m] (re-find ptrn (:name m)))))))
 
 (defn get-item [player-id & args]
   "gets an item from the room and associates it with a player"
