@@ -85,8 +85,8 @@
                              (partial move-player player-id (second kv))})
                           entries)))))
 
-; find all the items in the room that match the first argument
 (defn get-room-item-ids [player-id & args]
+  "find all the items in the room that match the first argument"
   (let [ptrn (re-pattern (str "^" (first args)))]
     ( ->> player-id
           (get @players)
@@ -97,8 +97,8 @@
           vals
           (filter (fn [m] (re-find ptrn (:name m)))))))
 
-; find all the items in the room that match the first argument
 (defn get-player-item-ids [player-id & args]
+  "find all the items belonging to the player that match the first argument"
   (let [ptrn (re-pattern (str "^" (first args)))]
     ( ->> player-id
           (get @players)
